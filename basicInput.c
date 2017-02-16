@@ -1,3 +1,8 @@
+/*Write a program that takes a single argument, converts it to an integer with 
+ * the strtol() function, and casts that value to an unsigned char. Then, 
+ * print out both the signed and unsigned values. The output should look 
+ * something like: Signed representation: -1, unsigned representation: 255*/
+
 #include <stdio.h>
 #include <stdlib.h>
 

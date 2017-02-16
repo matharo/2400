@@ -1,4 +1,4 @@
-/*C Programming Exercise 1*/
+/*Create a program that does a simple output to the console*/
 
 #include <stdio.h>
 
