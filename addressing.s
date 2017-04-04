@@ -18,16 +18,16 @@ main:
 	movl 	$0, %ebx
 			//imm - index inside myarray
 	movl 	$myarray, %eax
-	pushl 	(%eax, %ebx, 4)	
+	pushl 	(%eax, %ebx, 4)		// 4(%eax) == 100 	
 
 	incl 	%ebx
-	pushl 	(%eax, %ebx, 4)
+	pushl 	(%eax, %ebx, 4)		// 8(%eax) == 200
+
+        incl    %ebx	
+        pushl    (%eax, %ebx, 4)	// 12(%eax) == 300
 
         incl    %ebx
-        pushl    (%eax, %ebx, 4)
-
-        incl    %ebx
-        pushl    (%eax, %ebx, 4)
+        pushl    (%eax, %ebx, 4)	// 16(%eax) == 400
         incl    %ebx
         pushl    (%eax, %ebx, 4)
         incl    %ebx
