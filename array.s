@@ -34,7 +34,7 @@ main:
 
 	increment:
 	 incl	%ebx			#increment ebx, counter var
-	 cmpl	length,%ebx		#compare counter to max length of array
+	 cmpl	length,%ebx		#compare counter to max length of array (0-499)
 	 jl	loop			#counter < length, loop again
 
 	stop:
@@ -327,6 +327,8 @@ print_of:
 	.string "Minimum value: %d\n"
     targetfound:
 	.string "Target %d found at %d\n"
+    counter:
+	.string "%d  "
 #Declare read/write data section of program
 .section .data
     target:
