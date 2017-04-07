@@ -14,13 +14,14 @@ main:
 	movl	$array, %eax		#put array list in eax
 	movl	$0, %ebx		#initialize counter var
 	leal	array, %ecx		#max
-	leal	array, %edx		#min
+	movl	$0, %edx		#min
 	movl	$615049950, %edi	#target
 
 	loop:
 	 cmpl	(%eax, %ebx, 4), %edi	#compare curr num to target
 	 jne	max			#curr num != target, jump
 	 movl	%ebx, %esi	 	#curr num == target, save that counter var
+
 	max:
 	 cmpl	(%eax,%ebx,4),%ecx	#if max > curr num, then find min
 	 jge	min
@@ -28,7 +29,7 @@ main:
 	 jmp	increment		#increment, get diff curr num
 
 	min:
-	 cmpl	(%eax, %ebx, 4), %edx	#find min
+	 cmpl	(%eax, %ebx, 4),%edx	#find min
 	 jle	increment
 	 movl	(%eax, %ebx, 4), %edx	#set as new min
 
@@ -38,17 +39,25 @@ main:
 	 jl	loop			#counter < length, loop again
 
 	stop:
+	 pushl	%eax
+	 pushl	%edx
 	 pushl	%ecx			#get and print max
 	 pushl	$maxstr
 	 call	printf
 	 popl	%ecx
 	 popl	%ecx
+	 popl	%edx
+	 popl	%eax
 
+	 pushl 	%eax
+	 pushl	%ecx
 	 pushl	%edx			#get and print min
 	 pushl	$minstr
 	 call	printf
+	 popl	%edx
+	 popl	%edx
 	 popl	%ecx
-	 popl	%ecx
+	 popl	%eax
 
 	 addl	$1,%esi			#get target counter var, add 1 bc counter starts at 0
 	 pushl	%esi
