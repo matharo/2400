@@ -89,7 +89,11 @@ main:
 	pushl $sum
 	pushl $string
 	call printf
-
+	popl %eax
+	popl %eax
+	popl %eax
+	popl %eax
+	popl %eax
 	popl %eax
 	#Finish the main function with leave and ret
 	leave

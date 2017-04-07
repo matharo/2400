@@ -1,43 +1,112 @@
-#compile with gcc -m32 flags.s -o flags
-
+#compile with gcc -m32 flow.s -o flow
 #Declare program code section of program
 .text
 .global main                            /* program entry point */
+
+compare:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pusha
+
+	#Move the arguments A and B into the registers EAX and EBX respectively
+	movl	8(%ebp), %eax #Argument A
+	movl	12(%ebp), %ebx #Argument B
+
+	#Your comparison code goes here
+		//part of number 6 and 8
+	pushl 	%ebx
+	pushl	%eax
+	pushl 	$testing
+	call 	printf		#print off values A and B
+	popl 	%edx		#printf changes eax and ebx
+	popl 	%eax		
+	popl 	%ebx		#pop to get original arguments
+
+		//number 6
+	#cmpl 	%ebx, %eax	# b-a = 100-75 = 25	signed flag 1, zero flag 0
+	#cmpl 	%eax, %ebx	# a-b = 75-100 = -25	signed flag 0, zero flag 0
+	#subl 	$25, %ebx	# b = b-25 = 100-25 = 75
+	#cmpl 	%ebx, %eax	# b-a = 75-75 = 0	signed flag 0, zero flag 1
+	#call print_all		
+
+		//number 8 and 9 -- see the variables; 
+		//added: testing, comparing, A, B, equals
+	cmpl 	%ebx, %eax	#arg 2 = eax, arg 1 = ebx
+	jg	GREATER	#arg 2 is greater than arg 1
+	js	LESS	#arg 2 is less than arg 1
+        pushl 	$equals
+        call 	printf
+        jmp 	compare_exit
+
+	GREATER:
+	pushl 	$B
+	pushl 	$A  #pushed first, arg 2
+	pushl 	$comparing
+	call 	printf
+	jmp 	compare_exit
+	
+	LESS:
+	pushl 	$A
+	pushl 	$B
+	pushl 	$comparing	
+	call  	printf
+	jmp 	compare_exit
+	
+	#Execute this code to exit function
+	compare_exit:
+	pop	%eax
+	pop 	%ebx
+	leave
+	ret
 
 main:
 	#Preamble to the main function
 	pushl	%ebp
 	movl	%esp, %ebp
 
-	#Our code starts here
+	movl $0, %eax
+/*		//number 5
+target:
+	call print_eax
+	incl %eax
+	jmp target
+*/
 
-	movl $1, %eax		#number 4, if movl 1 and subl 1, eax = 0,then flag will be unset = 0
-	//subl $1, %eax		#number 5 zero flag = off, eax = 1
+		//number 10
+	movl $100, %eax		#set eax to 100
+Loop100:
+	call print_eax
+	testl %eax, %eax	#test if eax&eax is 0
+	jz DONE			#if test == 0, raises zero flag, jump
+	decl %eax		#eax != 0, decrement eax by 1
+	jmp Loop100		#loop again
+DONE:
+	pop %eax
 
-	//number 6 subtract x and y, and if the result is zero, set the zero flag on, otherwise, zero flag is off
-	//number 7 set the zero flag on when I equals 50, otherwise, keep looping and incrementing i
+	#Example calling the function compare with
+	#A = 75
+	#B = 100		
+	
+		//part of number 8 & 9
+	#pushl	$100
+	#pushl	$75		#B is greater than A
 
-		//number 8	
-	#movl $0xFFFFF000, %eax	
-	#addl $0x00001000, %eax	#carry bit is set	number 9
-	#addl $0x00000111, %eax	#carry bit is off
+	pushl 	$22
+	pushl	$50		#A is greater than B
 
-		//number 11
-	#movl $0x0FFFFFFF, %eax	#overflow is off
-	#addl $0x7FFFFFFF, %eax	#overflow is set
+	#pushl $10
+	#pushl $10		#The arguments are equal
 
-		//number 12	
-	movl $0x1, %eax	
-	#addl $0x1, %eax	#signed flag is off
-	subl $0x2, %eax		#signed flag is on, set	
+	call	compare
+	pop	%eax
+	pop	%eax
 
-	call print_all		#number 3
-	#Our code ends here
+
 
 	#Finish the main function with leave and ret
+	EXIT:
 	leave
 	ret
-
 print_all:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -52,7 +121,6 @@ print_all:
 	call	print_of
 	leave
 	ret
-
 print_intro:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -69,7 +137,6 @@ print_intro:
 	popf
 	leave
 	ret
-
 print_eax:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -88,7 +155,6 @@ print_eax:
 	popf
 	leave
 	ret
-
 print_ebx:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -109,7 +175,6 @@ print_ebx:
 	popf
 	leave
 	ret
-
 print_ecx:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -128,7 +193,6 @@ print_ecx:
 	popf
 	leave
 	ret
-
 print_edx:
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -205,8 +269,6 @@ print_zf:
 	#function exit
 	leave
 	ret
-
-
 print_sf:
 	#function preamble
 	pushl	%ebp
@@ -218,16 +280,22 @@ print_sf:
 	pushl 	%edx
 
 	#Finish this function by writing your code here
-	pushf			#push eflags
-	pop 	%eax		#pop eflags and put into eax
-	andl 	$0x80, %eax  	#select 8th bit of flags
-	shrl	$7, %eax	#move 8th bit to the 1st place, 1st bit
+	#Now we select the eighth bit and move it to the first place
+        pushf   #push eflags onto stack
+        pop     %eax #put eflags into register
+        andl    $0x80, %eax #select eigth bit of flags
+        shrl    $7, %eax #move the eigth bit down to the first place
+
+        #Set up and call printf function
+        pushl   %eax #push the 0/1 value onto the stack for printf
+        pushl   $strsf #push the zf string onto stack for printf
+        pushl   $string #push the specifier string onto stack for printf
+        call    printf
+        pop     %eax #clear $string from stack
+        pop     %eax #clear $strzf from stack
+        pop     %eax #clear the 0/1 value from the stack
 
 	#restore the existing state of the processor
-	pushl 	%eax
-	pushl	$strsf
-	pushl	$string
-	call	printf
 	pop	%edx
 	pop	%ecx
 	pop	%eax
@@ -284,6 +352,16 @@ print_of:
     intro:
 	.string "Printing processor state:\n"
 
+    testing:
+	.string "Testing A = %d and B = %d\n"
+    comparing:
+	.string "%s is greater than %s\n"
+    equals:
+	.string "The arguments are equal\n"
+    A:
+	.string "A"
+    B:
+	.string "B"
 #Declare read/write data section of program
 .section .data
 	#not needed for this assignment

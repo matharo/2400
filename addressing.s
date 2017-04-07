@@ -15,27 +15,32 @@ main:
 	#How we called printf from last time
 
 		//number 14
-	movl 	$0, %ebx
+	movl 	$6, %ebx	#array range: 0-6, 7 elements
 			//imm - index inside myarray
 	movl 	$myarray, %eax
-	pushl 	(%eax, %ebx, 4)		// 4(%eax) == 100 	
+#	pushl 	(%eax, %ebx, 4)		# 4(%eax) == 100 	
+#
+#	decl 	%ebx
+#	pushl 	(%eax, %ebx, 4)		# 8(%eax) == 200
+#
+#        decl    %ebx	
+#        pushl    (%eax, %ebx, 4)	# 12(%eax) == 300
+#
+#        decl    %ebx
+#        pushl    (%eax, %ebx, 4)	# 16(%eax) == 400
+#        decl    %ebx
+#        pushl    (%eax, %ebx, 4)
+#        decl    %ebx
+#        pushl    (%eax, %ebx, 4)
+#        decl    %ebx
+#        pushl    (%eax, %ebx, 4)
 
-	incl 	%ebx
-	pushl 	(%eax, %ebx, 4)		// 8(%eax) == 200
-
-        incl    %ebx	
-        pushl    (%eax, %ebx, 4)	// 12(%eax) == 300
-
-        incl    %ebx
-        pushl    (%eax, %ebx, 4)	// 16(%eax) == 400
-        incl    %ebx
-        pushl    (%eax, %ebx, 4)
-        incl    %ebx
-        pushl    (%eax, %ebx, 4)
-        incl    %ebx
-        pushl    (%eax, %ebx, 4)
-
-
+	loop:
+	cmpl	$0, %ebx
+	jl	stop
+	pushl	(%eax, %ebx, 4)
+	decl	%ebx
+	jmp	loop
 		//number 5
 	//leal 	myarray,%eax
 	//pushl 	4(%eax)
@@ -47,9 +52,16 @@ main:
 		//number 3 
 	//movl 	(myarray),%eax
 	//pushl %eax
+	stop:
 	pushl	$string
 	call	printf
-
+	popl	%eax
+	popl	%eax
+	popl    %eax
+        popl    %eax
+	popl    %eax
+        popl    %eax
+	popl    %eax
 	#Our code ends here
 
 	#Finish the main function with leave and ret
