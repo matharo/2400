@@ -15,16 +15,25 @@ main:
 	loop:
 	cmpl	%ebx, %eax	#compare A to Z
 	jg	repeat		#if eax > 90, start repeating letters
+	
+	pushl	%edi
+	pushl	%edx
+	pushl	%ecx
+	pushl	%ebx
 	pushl	%eax	
 	call	putchar
 	popl	%eax
+	popl	%ebx
+	popl	%ecx
+	popl	%edx
+	popl	%edi
 	
 	decl	%edx
+	incl	%eax
 	countLetters:
-	cmpl	$0, %edx	#if letter counter less than 26
-	je	newline		#max 0-25 letters per row, newline
+	testl	%edx, %edx	#if letter counter less than 26
+	jz	newline		#max 0-25 letters per row, newline
 
-	incl	%eax		#increment 65, A
 	jmp 	loop		
 
 	repeat:
@@ -32,18 +41,26 @@ main:
 	jmp	countLetters
 
 	newline:
-	pushl	%ecx
-	call	putchar		#insert new line
-	popl	%ecx
+	pushl   %edi
+        pushl   %edx
+        pushl   %eax
+        pushl   %ebx
+        pushl   %ecx
+        call    putchar
+        popl    %ecx
+        popl    %ebx
+        popl    %eax
+        popl    %edx
+        popl    %edi
 
 	cmpl	%ebx, %eax
 	jge	change
-	addl	$2, %eax
+	addl	$1, %eax
 	jmp	countRow	
 
 	change:
 	movl	$65, %eax
-	addl	$2, %eax
+	addl	$1, %eax
 
 	countRow:
 	decl	%edi		#decrement row counter
